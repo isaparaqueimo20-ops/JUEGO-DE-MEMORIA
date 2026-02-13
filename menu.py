@@ -3,17 +3,21 @@ import sys
 import constantes
 from constantes import DIFICULTAD
 
-
 def ejecutar_menu(ventana, reloj):
+
     pygame.display.set_caption("Menú")
 
-    fondo = pygame.transform.scale(constantes.FONDO,(constantes.ANCHO, constantes.ALTO))
+    fondo = pygame.transform.scale(
+        constantes.FONDO,
+        (constantes.ANCHO, constantes.ALTO)
+    )
 
-    MENU = "menu"
-    DIFICULTAD = "dificultad"
-    INSTRUCCIONES = "instrucciones"
+    ESTADO_MENU = "menu"
+    ESTADO_DIFICULTAD = "dificultad"
+    ESTADO_INSTRUCCIONES = "instrucciones"
 
-    estado = MENU
+    estado = ESTADO_MENU
+    sonido_menu = constantes.SONIDO_ACTIVADO
 
     def dibujar_texto(texto, fuente, color, x, y):
         superficie = fuente.render(texto, True, color)
@@ -22,107 +26,127 @@ def ejecutar_menu(ventana, reloj):
         return rect
 
     while True:
+
         reloj.tick(constantes.FPS)
         ventana.blit(fondo, (0, 0))
 
+        # -------- EVENTOS --------
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                return None
 
             if evento.type == pygame.MOUSEBUTTONDOWN:
-                if estado == MENU:
+
+                if estado == ESTADO_MENU:
                     if boton_dificultad.collidepoint(evento.pos):
-                        estado = DIFICULTAD
+                        estado = ESTADO_DIFICULTAD
                     elif boton_instrucciones.collidepoint(evento.pos):
-                        estado = INSTRUCCIONES
+                        estado = ESTADO_INSTRUCCIONES
                     elif boton_salir.collidepoint(evento.pos):
-                        pygame.quit()
-                        sys.exit()
+                        return None
+                    elif boton_sonido.collidepoint(evento.pos):
 
-                elif estado == DIFICULTAD:
+                            constantes.SONIDO_ACTIVADO = not constantes.SONIDO_ACTIVADO
+
+                            if pygame.mixer.get_init():
+                                if constantes.SONIDO_ACTIVADO:
+                                     pygame.mixer.music.unpause()
+                            else:
+                                pygame.mixer.music.pause()
+
+                elif estado == ESTADO_DIFICULTAD:
                     if boton_facil.collidepoint(evento.pos):
-                        return 6
+                        return "facil"
                     elif boton_medio.collidepoint(evento.pos):
-                        return 12
+                        return "medio"
                     elif boton_dificil.collidepoint(evento.pos):
-                        return 18
+                        return "dificil"
+                    elif boton_libre.collidepoint(evento.pos):
+                        return "libre"
                     elif boton_volver.collidepoint(evento.pos):
-                        estado = MENU
+                        estado = ESTADO_MENU
 
-                elif estado == INSTRUCCIONES:
+                elif estado == ESTADO_INSTRUCCIONES:
                     if boton_volver.collidepoint(evento.pos):
-                        estado = MENU
+                        estado = ESTADO_MENU
 
-        #dibujar menu
-        if estado == MENU:
-            dibujar_texto(
-                "JUEGO DE MEMORIA",
-                constantes.fuente_titulo,
-                constantes.MORADO_P,
-                constantes.ANCHO // 2,
-                120
-            )
+        # -------- DIBUJAR --------
+        if estado == ESTADO_MENU:
 
-            dibujar_texto(
-                "MENÚ PRINCIPAL",
-                constantes.fuente_menu,
-                constantes.MORADO_P,
-                constantes.ANCHO // 2,
-                180
-            )
+            dibujar_texto("JUEGO DE MEMORIA",
+                          constantes.fuente_titulo,
+                          constantes.MORADO_P,
+                          constantes.ANCHO // 2, 120)
 
             boton_dificultad = dibujar_texto(
-                "Elegir dificultad", constantes.fuente_menu, constantes.AZUL_P,
-                constantes.ANCHO // 2, 260
-            )
+                "Elegir dificultad",
+                constantes.fuente_menu,
+                constantes.AZUL_P,
+                constantes.ANCHO // 2, 260)
+
             boton_instrucciones = dibujar_texto(
-                "Instrucciones", constantes.fuente_menu, constantes.AZUL_P,
-                constantes.ANCHO // 2, 320
-            )
+                "Instrucciones",
+                constantes.fuente_menu,
+                constantes.AZUL_P,
+                constantes.ANCHO // 2, 320)
+
             boton_salir = dibujar_texto(
-                "Salir", constantes.fuente_menu, constantes.AZUL_P,
-                constantes.ANCHO // 2, 380
+                "Salir",
+                constantes.fuente_menu,
+                constantes.AZUL_P,
+                constantes.ANCHO // 2, 380)
+            
+            boton_sonido = dibujar_texto(
+                f"Sonido: {'ON' if constantes.SONIDO_ACTIVADO else 'OFF'}",
+                constantes.fuente_menu,
+                constantes.AZUL_P,
+                constantes.ANCHO // 2, 440
             )
 
-        elif estado == DIFICULTAD:
-            dibujar_texto(
-                "SELECCIONA DIFICULTAD",
-                constantes.fuente_titulo,
-                constantes.MORADO_P,
-                constantes.ANCHO // 2,
-                100
-            )
 
-            boton_facil = dibujar_texto(
-                "Fácil (6 pares)", constantes.fuente_menu, constantes.AZUL_P,
-                constantes.ANCHO // 2, 260
-            )
-            boton_medio = dibujar_texto(
-                "Medio (12 pares)", constantes.fuente_menu, constantes.AZUL_P,
-                constantes.ANCHO // 2, 320
-            )
-            boton_dificil = dibujar_texto(
-                "Difícil (18 pares)", constantes.fuente_menu, constantes.AZUL_P,
-                constantes.ANCHO // 2, 380
-            )
-            boton_volver = dibujar_texto(
-                "Volver", constantes.fuente_menu, constantes.AZUL_P,
-                constantes.ANCHO // 2, 450
-            )
+        elif estado == ESTADO_DIFICULTAD:
 
-        elif estado == INSTRUCCIONES:
-            dibujar_texto(
-                "INSTRUCCIONES",
-                constantes.fuente_titulo,
-                constantes.AMARILLO,
-                constantes.ANCHO // 2,
-                120
-            )
+            dibujar_texto("SELECCIONA DIFICULTAD",
+                          constantes.fuente_titulo,
+                          constantes.MORADO_P,
+                          constantes.ANCHO // 2, 100)
 
-            boton_volver = dibujar_texto(
-                "Volver", constantes.fuente_menu, constantes.BLANCO,
-                constantes.ANCHO // 2, 420
-            )
+            boton_facil = dibujar_texto("Fácil (6 pares)",
+                                        constantes.fuente_menu,
+                                        constantes.AZUL_P,
+                                        constantes.ANCHO // 2, 200)
+
+            boton_medio = dibujar_texto("Medio (8 pares)",
+                                        constantes.fuente_menu,
+                                        constantes.AZUL_P,
+                                        constantes.ANCHO // 2, 260)
+
+            boton_dificil = dibujar_texto("Difícil (12 pares)",
+                                          constantes.fuente_menu,
+                                          constantes.AZUL_P,
+                                          constantes.ANCHO // 2, 320)
+
+            boton_libre = dibujar_texto("Libre (10 pares)",
+                                        constantes.fuente_menu,
+                                        constantes.AZUL_P,
+                                        constantes.ANCHO // 2, 380)
+
+            boton_volver = dibujar_texto("Volver",
+                                         constantes.fuente_menu,
+                                         constantes.AZUL_P,
+                                         constantes.ANCHO // 2, 450)
+
+        elif estado == ESTADO_INSTRUCCIONES:
+
+            dibujar_texto("INSTRUCCIONES",
+                          constantes.fuente_titulo,
+                          constantes.MORADO_P,
+                          constantes.ANCHO // 2, 120)
+
+            boton_volver = dibujar_texto("Volver",
+                                         constantes.fuente_menu,
+                                         constantes.BLANCO,
+                                         constantes.ANCHO // 2, 420)
+
 
         pygame.display.update()
