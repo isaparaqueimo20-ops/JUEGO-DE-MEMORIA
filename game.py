@@ -49,7 +49,7 @@ def obtener_config(pares):
             return config
     return DIFICULTAD["facil"]
 
-def crear_cartas(pares):
+def crear_cartas(pares, dificultad):
     config = obtener_config(pares)
     cartas = []
     ancho, alto = config["ancho_alto"]
@@ -61,7 +61,7 @@ def crear_cartas(pares):
     for i in range(1, pares + 1):
         imagen = None
         for ext in ['.png', '.jpg']:
-            ruta_img = constantes.IMG_DIR / f"{i}{ext}"
+            ruta_img = constantes.IMG_DIRS[dificultad] / f"{i}{ext}"
             try:
                 imagen_original = pygame.image.load(str(ruta_img)).convert_alpha()
                 imagen = pygame.transform.scale(imagen_original, (ancho, alto))
@@ -103,7 +103,7 @@ def ejecutar_juego(ventana, reloj, dificultad):
     config = DIFICULTAD[dificultad]
     num_pares = config["num_pares"]
 
-    cartas = crear_cartas(num_pares)
+    cartas = crear_cartas(num_pares, dificultad)
     
     tiempo_agotado = False
     

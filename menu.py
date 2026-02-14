@@ -12,6 +12,7 @@ def ejecutar_menu(ventana, reloj):
         (constantes.ANCHO, constantes.ALTO)
     )
 
+
     ESTADO_MENU = "menu"
     ESTADO_DIFICULTAD = "dificultad"
     ESTADO_INSTRUCCIONES = "instrucciones"
@@ -25,6 +26,7 @@ def ejecutar_menu(ventana, reloj):
         ventana.blit(superficie, rect)
         return rect
 
+
     while True:
 
         reloj.tick(constantes.FPS)
@@ -36,7 +38,6 @@ def ejecutar_menu(ventana, reloj):
                 return None
 
             if evento.type == pygame.MOUSEBUTTONDOWN:
-
                 if estado == ESTADO_MENU:
                     if boton_dificultad.collidepoint(evento.pos):
                         estado = ESTADO_DIFICULTAD
@@ -44,13 +45,15 @@ def ejecutar_menu(ventana, reloj):
                         estado = ESTADO_INSTRUCCIONES
                     elif boton_salir.collidepoint(evento.pos):
                         return None
-                    elif boton_sonido.collidepoint(evento.pos):
-
-                            constantes.SONIDO_ACTIVADO = not constantes.SONIDO_ACTIVADO
-
-                            if pygame.mixer.get_init():
-                                if constantes.SONIDO_ACTIVADO:
-                                     pygame.mixer.music.unpause()
+                    if boton_sonido.collidepoint(evento.pos):
+                        constantes.SONIDO_ACTIVADO = not constantes.SONIDO_ACTIVADO
+                            # Apaga o enciende música
+                        if pygame.mixer.get_init():
+                            if constantes.SONIDO_ACTIVADO:
+                                if not pygame.mixer.music.get_busy():
+                                    pygame.mixer.music.play(-1)
+                                else:
+                                    pygame.mixer.music.unpause()
                             else:
                                 pygame.mixer.music.pause()
 
@@ -100,7 +103,7 @@ def ejecutar_menu(ventana, reloj):
                 f"Sonido: {'ON' if constantes.SONIDO_ACTIVADO else 'OFF'}",
                 constantes.fuente_menu,
                 constantes.AZUL_P,
-                constantes.ANCHO // 2, 440
+                constantes.ANCHO - 100, 50
             )
 
 

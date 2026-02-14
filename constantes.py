@@ -9,6 +9,13 @@ BASE_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = BASE_DIR / "Assets"
 IMG_DIR = ASSETS_DIR / "Images"
 SND_DIR = ASSETS_DIR / "Sonido"
+IMG_DIRS = {
+    "facil": IMG_DIR / "facil",
+    "medio": IMG_DIR / "medio",
+    "dificil": IMG_DIR / "dificil",
+    "libre": IMG_DIR / "libre"
+}
+
 
 #Ancho de ventana
 ANCHO = 1280
@@ -60,7 +67,7 @@ DIFICULTAD = {
     },
     "libre": {
         "num_pares": 10,
-        "ancho_alto": (80, 100),
+        "ancho_alto": (120, 110),
         "margen": 20,
         "columnas": 4,
         "filas": 4,
