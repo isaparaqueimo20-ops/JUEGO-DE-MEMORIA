@@ -34,26 +34,51 @@ from game import ejecutar_juego
         
 pygame.init()
 
+try:
+    pygame.mixer.init()
+except:
+    print("Error inicializando el mixer")
+
 ventana = pygame.display.set_mode((constantes.ANCHO, constantes.ALTO))
-pygame.display.set_caption("Juego de Memoria")
-
-fondo = pygame.transform.scale(constantes.FONDO, (constantes.ANCHO, constantes.ALTO))
 reloj = pygame.time.Clock()
+pygame.display.set_caption("Juego Memoria")
 
-#bucle principal del juego
+pygame.mixer.music.load(str(constantes.SND_DIR / "sonido_fondo.mp3"))
+if constantes.SONIDO_ACTIVADO:
+    pygame.mixer.music.play(-1)
+
 running = True
+
 while running:
+
     dificultad = ejecutar_menu(ventana, reloj)
 
+    if constantes.SONIDO_ACTIVADO:
+        pygame.mixer.music.unpause()
+    else:
+        pygame.mixer.music.pause()
+
     if dificultad is None:
-        running = False
         break
 
-    print("Dificultad elegida:", dificultad)
-    ejecutar_juego(ventana, reloj, dificultad)
+    while True:
+        resultado = ejecutar_juego(ventana, reloj, dificultad)
+
+        if constantes.SONIDO_ACTIVADO:
+            pygame.mixer.music.unpause()
+        else:
+            pygame.mixer.music.pause()
+
+        if resultado in ["menu", None]:
+            break
+
+        elif resultado == "salir":
+            running = False
+            break
 
 pygame.quit()
 sys.exit()
+
     
         
 '''if __name__ == "__main__":
@@ -61,3 +86,4 @@ sys.exit()
     # El Core ya sabe qué hacer porque la lógica está en la base.
     game = Memoria()
     game.run_preview()'''
+    
